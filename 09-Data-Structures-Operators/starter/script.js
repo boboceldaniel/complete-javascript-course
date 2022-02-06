@@ -172,7 +172,7 @@ console.log(menu);
 const str = 'Daniel';
 const letters = [...str, '', 'B.'];
 
-//We can only use the spread operator to created arrays or pass arguments into a function
+//We can only use the spread operator to create arrays or pass arguments into a function
 console.log(letters);
 console.log(...str);
 
@@ -229,4 +229,176 @@ add(...x);
 
 restaurant.orderPizza('mushrooms', 'onion', 'olives', 'spinach');
 restaurant.orderPizza('mushrooms');
+
+
+//SHORT CIRCUITING && ||
+//They can use any data type, return any data type and use short-circuiting
+
+//OR
+//The result of the OR operator doesn't have to always be a boolean
+//If the first value in the OR operator is a truthy value, it will return it and not even look at the rest
+console.log(3 || 'Jonas');
+//If the first value in the OR operator is a falsy value, it will evaluate the next and return the first found truthy value
+console.log('' || 'Jonas');
+//If all values are falsy, it will return the last
+console.log(undefined || null || undefined);
+
+//Practical application, when we don't know if a value exists
+restaurant.numGuests1 = 23;
+const guests1 = restaurant.numGuests1 ? restaurant.numGuests1 : 10;
+console.log(guests1);
+//same as 
+restaurant.numGuests2 = 23;
+const guests2 = restaurant.numGuests2 || 10;
+console.log(guests2);
+
+
+//AND
+//Works exactly the oposite of OR
+//If the first value in the AND operator is a falsy value, it will return it and not even look at the rest
+console.log(0 && 'Jonas');
+//If the first value in the ADN operator is a truthy value, it will evaluate the next and return the first found falsy value. Below returns Jonas
+console.log(7 && 'Jonas');
+//Below returns 0
+console.log(7 && 0 && 8);
+//Below returns the last value, because all are truthy
+console.log(7 && 8 && 9);
+
+
+//The nullish coalescing operator ??. Works just like the OR, but only with nullish values: null and undefined. It does not consider 0 or empty string '' as nullish. Useful when 0 is a valid case that we don't want to be short-circuited
+restaurant.numGuests = 0;
+const guest = restaurant.numGuests || 10;
+console.log(guest);
+const guestCorrect = restaurant.numGuests ?? 10;
+console.log(guest);
+
+
+//LOGICAL ASIGNMENT OPERATORS
+const rest1 = {
+  name: 'Capri',
+  numGuests: 0,
+};
+
+const rest2 = {
+  name: 'La Piazza',
+  owner: 'Giovanni Rossi',
+};
+
+//We want to add the numGuests property to the restaurants which do not have it
+//Below only writes to rest2 and does not override rest1
+rest1.numGuests = rest1.numGuests || 10;
+rest2.numGuests = rest2.numGuests || 10;
+console.log(rest1);
+console.log(rest2);
+//sames as below, using the OR asignment operator, but also does not work well with 0
+rest1.numGuests ||= 10;
+rest2.numGuests ||= 10;
+console.log(rest1);
+console.log(rest2);
+//same as below, using the ??, which also works well for 0 values
+rest1.numGuests ??= 10;
+rest2.numGuests ??= 10;
+console.log(rest1);
+console.log(rest2);
+
+//We want to anonymise the names of the restaurant owners. The restaurants which do not have an owner will not be affected
+rest1.owner &&= 'ANONYMOUS';
+rest2.owner &&= 'ANONYMOUS';
+console.log(rest1);
+console.log(rest2);
 */
+
+//CHALLENGE1
+const game = {
+  team1: 'Bayern Munich',
+  team2: 'Borrussia Dortmund',
+  players: [
+    [
+      'Neuer',
+      'Pavard',
+      'Martinez',
+      'Alaba',
+      'Davies',
+      'Kimmich',
+      'Goretzka',
+      'Coman',
+      'Muller',
+      'Gnarby',
+      'Lewandowski',
+    ],
+    [
+      'Burki',
+      'Schulz',
+      'Hummels',
+      'Akanji',
+      'Hakimi',
+      'Weigl',
+      'Witsel',
+      'Hazard',
+      'Brandt',
+      'Sancho',
+      'Gotze',
+    ],
+  ],
+  score: '4:0',
+  scored: ['Lewandowski', 'Gnarby', 'Lewandowski', 'Hummels'],
+  date: 'Nov 9th, 2037',
+  odds: {
+    team1: 1.33,
+    x: 3.25,
+    team2: 6.5,
+  },
+};
+
+//Create one player array for each team (variables'players1'and 'players2')
+const [players1, players2] = game.players;
+
+//The first player in any player array is the goal keeper and the others are field players. For Bayern Munich (team 1) create one variable ('gk') with the goalkeeper's name, and one array ('fieldPlayers') with all the remaining 10 field players
+const [gk, ...fieldPlayers] = game.players[0];
+//or
+//const [gk, ...fieldPlayers] = players1;
+
+//Create an array 'allPlayers' containing all players of both teams(22 players)
+const allPlayers = [...game.players[0], ...game.players[1]];
+//or
+//const allPlayers = [...players1, ...players2];
+
+//During the game, BayernMunich(team1) used 3 substitute players. So create a new array ('players1Final') containing all the original team1 players plus 'Thiago', 'Coutinho' and 'Perisic'
+const players1Final = [...game.players[0], 'Thiago', 'Coutinho', 'Perisic'];
+//or
+//const players1Final = [...players1, 'Thiago', 'Coutinho', 'Perisic'];
+
+//Based on the game.odds object, create one variable for each odd(called 'team1', 'draw' and 'team2')
+const {
+  odds: { team1: team1, x: draw, team2: team2 },
+} = game;
+
+//Write a function ('printGoals') that receives an arbitrary number of player names (not an array) and prints each of them to the console, along with the number of goals that were scored in total (number of player names passed in)
+const printGoals = function (...playerNames) {
+  for (let i = 0; i < playerNames.length; i++) {
+    console.log(`Player who scored: ${playerNames[i]}`);
+  }
+  console.log(`${playerNames.length} goals were scored`);
+};
+
+//The team with the lower odd is more likely to win. Print to the console which team is more likely to win, without using an if/else statement or the ternary operator.
+
+console.log(
+  (team1 < team2 && 'Team 1 more likely to win') ||
+    (team2 < team1 && 'Team 2 more likely to win')
+);
+
+//Just print everything
+console.log(`Team 1 players: ${players1}`);
+console.log(`Team 2 players: ${players2}`);
+console.log(`Team 1 goal keeper: ${gk}`);
+console.log(`Team 1 field players: ${fieldPlayers}`);
+console.log(`All players, ${allPlayers.length}: ${allPlayers}`);
+console.log(
+  `Team1 all players and substitutes, ${players1Final.length}: ${players1Final}`
+);
+console.log(`Team 1 winning odds: ${team1}`);
+console.log(`Draw odds: ${draw}`);
+console.log(`Team 2 winning odds: ${team2}`);
+printGoals('Davies', 'Muller', 'Lewandowski', 'Kimmich');
+printGoals(...game.scored);
