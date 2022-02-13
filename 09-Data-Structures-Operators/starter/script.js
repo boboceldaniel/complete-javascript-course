@@ -4,6 +4,24 @@
 const flights =
   '_Delayed_Departure;fao93766109;txl2133758440;11:25+_Arrival;bru0943384722;fao93766109;11:45+_Delayed_Arrival;hel7439299980;fao93766109;12:05+_Departure;fao93766109;lis2323639855;12:30';
 
+const weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+const openingHours = {
+  //ES6 we can also compute property names inside the []
+  [weekdays[3]]: {
+    open: 12,
+    close: 22,
+  },
+  [weekdays[4]]: {
+    open: 11,
+    close: 23,
+  },
+  [`sat`]: {
+    open: 0, // Open 24 hours
+    close: 24,
+  },
+};
+
 // Data needed for first part of the section
 const restaurant = {
   name: 'Classico Italiano',
@@ -12,26 +30,16 @@ const restaurant = {
   starterMenu: ['Focaccia', 'Bruschetta', 'Garlic Bread', 'Caprese Salad'],
   mainMenu: ['Pizza', 'Pasta', 'Risotto'],
 
-  openingHours: {
-    thu: {
-      open: 12,
-      close: 22,
-    },
-    fri: {
-      open: 11,
-      close: 23,
-    },
-    sat: {
-      open: 0, // Open 24 hours
-      close: 24,
-    },
-  },
+  //ES6 enhanced object literals, takes the externally defined class and adds it here as a property
+  openingHours,
 
-  order: function (starterMenuIndex, mainMenuIndex) {
+  //ES6 easier sintax for methods, we can remove the function keyword
+  order(starterMenuIndex, mainMenuIndex) {
     //Return the content of starterMenu and mainMenu arrays, based on the given indexes
     return [this.starterMenu[starterMenuIndex], this.mainMenu[mainMenuIndex]];
   },
 
+  //Old way of writing methods
   orderDelivery: function ({
     starterIndex = 1,
     mainIndex = 0,
@@ -306,7 +314,7 @@ rest1.owner &&= 'ANONYMOUS';
 rest2.owner &&= 'ANONYMOUS';
 console.log(rest1);
 console.log(rest2);
-*/
+
 
 //CHALLENGE1
 const game = {
@@ -402,3 +410,541 @@ console.log(`Draw odds: ${draw}`);
 console.log(`Team 2 winning odds: ${team2}`);
 printGoals('Davies', 'Muller', 'Lewandowski', 'Kimmich');
 printGoals(...game.scored);
+
+// FOR OF LOOP
+const menu = [...restaurant.starterMenu, ...restaurant.mainMenu];
+console.log(menu);
+
+//to loop through each item of the array
+for (const item of menu) console.log(item);
+
+//to get also the index of each item, but this returns an array with each item's index and also the item itself
+for (const item of menu.entries()) {
+  console.log(`${item[0] + 1}: ${item[1]}`);
+}
+//same as below with array destructuring
+for (const [i, el] of menu.entries()) {
+  console.log(`${i + 1}: ${el}`);
+}
+
+
+//OPTIONAL CHAINING (.?)
+if (restaurant.openingHours && restaurant.openingHours.mon)
+  console.log(restaurant.openingHours.mon.open);
+//same as below with optional chaining. Only if mon exists, the open property will be read
+console.log(restaurant.openingHours.mon?.open);
+//deeper
+console.log(restaurant.openingHours?.mon?.open);
+
+//Example
+const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+for (const day of days) {
+  const open = restaurant.openingHours[day]?.open ?? 'closed';
+  console.log(`On ${day}, we open at ${open}`);
+}
+
+//Methods
+console.log(restaurant.order?.(0, 1) ?? 'Method does not exit');
+console.log(restaurant.orderRisotto?.(0, 1) ?? 'Method does not exit');
+
+//Arrays
+const user = [];
+const users = [{ name: 'Jonas', email: 'hello@jonas.io' }];
+console.log(users[0]?.name ?? 'User array empty');
+console.log(user[0]?.name ?? 'User array empty');
+
+
+//LOOPING OBJECTS
+//Returns all the object properties in an array
+const properties = Object.keys(openingHours);
+console.log(properties);
+//We can compute the number of properties an object has
+let openStr = `We are open on ${properties.length} days: `;
+
+for (const day of properties) {
+  openStr += `${day}, `;
+}
+
+console.log(openStr);
+
+//Returns property values
+const values = Object.values(openingHours);
+console.log(values);
+
+//Returns property keys and property values
+const entries = Object.entries(openingHours);
+console.log(entries);
+
+for (const [day, { open, close }] of entries) {
+  console.log(`On ${day} we open at ${open} and close at ${close}`);
+}
+
+
+//CHALLENGE2
+const game = {
+  team1: 'Bayern Munich',
+  team2: 'Borrussia Dortmund',
+  players: [
+    [
+      'Neuer',
+      'Pavard',
+      'Martinez',
+      'Alaba',
+      'Davies',
+      'Kimmich',
+      'Goretzka',
+      'Coman',
+      'Muller',
+      'Gnarby',
+      'Lewandowski',
+    ],
+    [
+      'Burki',
+      'Schulz',
+      'Hummels',
+      'Akanji',
+      'Hakimi',
+      'Weigl',
+      'Witsel',
+      'Hazard',
+      'Brandt',
+      'Sancho',
+      'Gotze',
+    ],
+  ],
+  score: '4:0',
+  scored: ['Lewandowski', 'Gnarby', 'Lewandowski', 'Hummels'],
+  date: 'Nov 9th, 2037',
+  odds: {
+    team1: 1.33,
+    x: 3.25,
+    team2: 6.5,
+  },
+};
+
+const scoredArray = [...game.scored];
+console.log(scoredArray);
+for (const [index, player] of scoredArray.entries()) {
+  console.log(`Goal ${index + 1}: ${player}`);
+}
+
+let avgOdd = 0;
+for (const odd of Object.values(game.odds)) avgOdd += odd;
+avgOdd /= Object.values(game.odds).length;
+console.log(avgOdd);
+
+console.log(Object.entries(game.odds));
+for (const [team, odd] of Object.entries(game.odds)) {
+  const teamStr = team === 'x' ? 'draw' : `victory ${game[team]}`;
+  console.log(`Odd of ${teamStr} ${odd}`);
+}
+
+
+// SETS
+// A set is a collection of unique values
+// When creating a set, we need to pass in an iterable, like an array
+// The duplicate values from the iterable will be removed
+// The order of elements become irrelevant, there's no index and no way to get a specific value out of a set. There's also no need to do so
+const ordersSet = new Set([
+  'Pasta',
+  'Pizza',
+  'Pizza',
+  'Rissoto',
+  'Pasta',
+  'Pizza',
+]);
+console.log(ordersSet);
+
+//Strings are also iterables, so when we pass in a string, it will be broken down into each letter, but again duplicates are removed
+console.log(new Set('Daniel'));
+
+//A set can also be empty
+console.log(new Set(''));
+
+//Getting the size (not length)
+console.log(ordersSet.size);
+
+//Check if a certain element is inside a set
+console.log(ordersSet.has('Pizza'));
+console.log(ordersSet.has('Bread'));
+
+//Add items. Only the first gets added, because duplicate values are ignored
+ordersSet.add('Garlic Bread');
+ordersSet.add('Garlic Bread');
+console.log(ordersSet);
+
+//Remove items
+ordersSet.delete('Rissoto');
+console.log(ordersSet);
+
+//Delete all set elements
+// ordersSet.clear();
+// console.log(ordersSet);
+
+//Looping is possible
+for (const order of ordersSet) console.log(order);
+
+//Main use case of set is to remove duplicate values of arrays
+const staff = ['Waiter', 'Chef', 'Waiter', 'Manager', 'Chef', 'Waiter'];
+//Conversion from set to array
+const staffUnique = [...new Set(staff)];
+console.log(staffUnique);
+
+//To check how many unique positions in some array
+console.log(
+  new Set(['Waiter', 'Chef', 'Waiter', 'Manager', 'Chef', 'Waiter']).size
+);
+
+//To check how many different letters in a string
+console.log(new Set('boboceldaniel').size);
+
+//MAPS FUNDAMENTALS
+//A map is a datastructure used to map values to keys
+//As oposed to objects which have only string keys, the map keys can be any type, even other maps
+
+const rest = new Map();
+rest.set('name', 'Classico Italiano');
+rest.set(1, 'Firenze, Italy');
+rest.set(2, 'Lisbon, Portugal');
+
+//The set method also returns the updated map. So, we can chain together set methods
+rest
+  .set('categories', ['Italian', 'Pizzeria', 'Vegetarian', 'Organic'])
+  .set('open', 11)
+  .set('close', 23)
+  .set(true, 'We are open')
+  .set(false, 'We are closed');
+
+console.log(rest);
+
+//To read data from a map we use the get method with the key name
+console.log(rest.get('name'));
+console.log(rest.get(true));
+console.log(rest.get(1));
+
+const time = 21;
+console.log(rest.get(time > rest.get('open') && time < rest.get('close')));
+
+//The has method checks if a key exists and returns true or false
+console.log(rest.has('categories'));
+
+//Delete elements from a map
+rest.delete(2);
+console.log(rest);
+
+//Get the map size
+console.log(rest.size);
+
+//Remove all elements
+// rest.clear();
+
+//The key can be an array, but be careful how you define it
+const arr = [1, 2];
+rest.set(arr, 'Test');
+console.log(rest.get(arr));
+//This does not work because of the way the array is defined in the heap vs the objects
+rest.set([1, 2], 'Test');
+console.log(rest.get([1, 2]));
+
+//Can also use objects as map keys
+rest.set(document.querySelector('h1'), 'Heading');
+console.log(rest);
+
+//Another way to populate a map, when there are a lot of values
+const question = new Map([
+  ['question', 'What is the best programming language?'],
+  [1, 'C'],
+  [2, 'Java'],
+  [3, 'JS'],
+  ['correct', 3],
+  [true, 'Correct'],
+  [false, 'Try again'],
+]);
+
+console.log(question);
+
+//Object.entries also returns the same type of structure, array of arrays
+console.log(Object.entries(openingHours));
+//We can convert objects to maps
+const hoursMap = new Map(Object.entries(openingHours));
+console.log(hoursMap);
+
+//Iteration. Each item of the map will contain the key and the value, so we can already destructure that in the for loop
+console.log(question.get('question'));
+for (const [key, value] of question) {
+  if (typeof key === 'number') console.log(`Answer ${key}: ${value}`);
+}
+const answer = Number(prompt('Your answer'));
+console.log(answer);
+console.log(question.get(question.get('correct') === answer));
+
+//Convert map to an array of arrays
+console.log([...question]);
+
+
+//CHALLENGE 3
+const game = {
+  team1: 'Bayern Munich',
+  team2: 'Borrussia Dortmund',
+  players: [
+    [
+      'Neuer',
+      'Pavard',
+      'Martinez',
+      'Alaba',
+      'Davies',
+      'Kimmich',
+      'Goretzka',
+      'Coman',
+      'Muller',
+      'Gnarby',
+      'Lewandowski',
+    ],
+    [
+      'Burki',
+      'Schulz',
+      'Hummels',
+      'Akanji',
+      'Hakimi',
+      'Weigl',
+      'Witsel',
+      'Hazard',
+      'Brandt',
+      'Sancho',
+      'Gotze',
+    ],
+  ],
+  score: '4:0',
+  scored: ['Lewandowski', 'Gnarby', 'Lewandowski', 'Hummels'],
+  date: 'Nov 9th, 2037',
+  odds: {
+    team1: 1.33,
+    x: 3.25,
+    team2: 6.5,
+  },
+};
+
+const gameEvents = new Map([
+  [17, '⚽️ GOAL'],
+  [36, '🔁 Substitution'],
+  [47, '⚽️ GOAL'],
+  [61, '🔁 Substitution'],
+  [64, '🔶 Yellow card'],
+  [69, '🔴 Red card'],
+  [70, '🔁 Substitution'],
+  [72, '🔁 Substitution'],
+  [76, '⚽️ GOAL'],
+  [80, '⚽️ GOAL'],
+  [92, '🔶 Yellow card'],
+]);
+
+const eventsUnique = [...new Set(gameEvents.values())];
+console.log(eventsUnique);
+
+gameEvents.delete(64);
+console.log(gameEvents);
+
+let previousEvent = 0;
+let eventDelta = 0;
+let eventDeltaSum = 0;
+for (const [key, value] of gameEvents) {
+  eventDelta = key - previousEvent;
+  previousEvent = key;
+  eventDeltaSum += eventDelta;
+}
+console.log(
+  `An event happened, on average, every ${
+    eventDeltaSum / gameEvents.size
+  } minutes`
+);
+
+for (const [min, event] of gameEvents) {
+  min <= 45
+    ? console.log(`[FIRST HALF] ${min}: ${event}`)
+    : console.log(`[SECOND HALF] ${min}: ${event}`);
+}
+*/
+
+//WORKING WITH STRINGS
+const airline = 'TAP Air Portugal';
+const plane = 'A320';
+
+console.log(plane[0]);
+console.log('B737'[0]);
+
+console.log(airline.length);
+console.log('B737'.length);
+
+//Get the position of a string
+//First occurence
+console.log(airline.indexOf('r'));
+//Last occurence
+console.log(airline.lastIndexOf('r'));
+//Search for words, case sensitive
+console.log(airline.lastIndexOf('portugal'));
+console.log(airline.lastIndexOf('Portugal'));
+
+//Extract string, 4 is the position at which the extract starts
+console.log(airline.slice(4));
+
+//Extract string, from position 4 to position 7. It stops extracting before reaching 7.
+//The length of the extracted string will be end - beginning, 7-4 = 3
+console.log(airline.slice(4, 7));
+
+//Extract the first word without knowing what it is
+console.log(airline.slice(0, airline.indexOf(' ')));
+console.log(airline.slice(airline.lastIndexOf(' ') + 1));
+
+//With negative index, it extracts from the end
+console.log(airline.slice(-8));
+//this cuts of the last character
+console.log(airline.slice(0, -1));
+//this cuts of the first and last character
+console.log(airline.slice(1, -1));
+
+const checkMiddleSeat = function (seat) {
+  //B and E are middle seats
+  const s = seat.slice(-1);
+  if (s === 'B' || s === 'E') console.log('You got the middle seat');
+  else console.log('You got lucky');
+};
+
+checkMiddleSeat('11B');
+checkMiddleSeat('23C');
+checkMiddleSeat('3E');
+
+//Changing the CASE of a string
+console.log(airline.toLowerCase());
+console.log(airline.toUpperCase());
+
+//Fix capitalization in name
+const passenger = 'dAnIEL';
+const passengerLower = passenger.toLowerCase();
+const passengerCorrect =
+  passengerLower[0].toUpperCase() + passengerLower.slice(1);
+console.log(passengerCorrect);
+
+const fixCapitalization = function (name) {
+  const nameLower = name.toLowerCase();
+  const nameCorrect = nameLower[0].toUpperCase() + nameLower.slice(1);
+  return nameCorrect;
+};
+
+console.log(fixCapitalization('boboCEL'));
+
+//Comparing e-mails, check if they are same
+const email = 'hello@jonas.io';
+const loginEmail = '  Hello@Jonas.Io\n';
+
+const lowerEmail = loginEmail.toLowerCase();
+const trimmedEmail = lowerEmail.trim(); //removes white space
+console.log(trimmedEmail);
+
+//Or do all in one step
+const normalizedEmail = loginEmail.toLowerCase().trim();
+console.log(normalizedEmail);
+
+//Replacing parts of strings
+const priceGB = '288,97£';
+const priceUS = priceGB.replace('£', '$').replace(',', '.');
+console.log(priceUS);
+
+const announcement =
+  'All passengers come to boarding door 23. Boarding door 23!';
+console.log(announcement.replace('door', 'gate')); //this replaces only the first occurence
+console.log(announcement.replaceAll('door', 'gate')); //this replaced all occurences, but is fairly new
+console.log(announcement.replace(/door/g, 'gate')); //legacy method to replace all
+
+//Methods that return booleans
+const plane2 = 'Airbus A320neo';
+console.log(plane2.includes('A320'));
+console.log(plane2.includes('Boeing'));
+
+console.log(plane2.startsWith('A32'));
+
+if (plane2.startsWith('Airbus') && plane2.endsWith('neo')) {
+  console.log('Part of the new Airbus family');
+} else console.log('Not');
+
+//Practice
+const checkBaggage = function (items) {
+  const baggage = items.toLowerCase();
+  if (baggage.includes('knife') || baggage.includes('gun'))
+    console.log('Not allowed');
+  else console.log('Welcome');
+};
+checkBaggage('I have a laptop, some Food and a pocket Knife');
+checkBaggage('Socks and camera');
+checkBaggage('Got some snacks and a gun for protection');
+
+//Split method, allows to split a string into multiple elements of a new array, based on a divider string
+console.log('a+very+nice+string'.split('+'));
+console.log('Daniel Bobocel'.split(' '));
+
+const [firstName, lastName] = 'Daniel Bobocel'.split(' ');
+
+//Join method does the opposite of split, makes a string from multiple array elements, divided by the given divider string
+const newName = ['Mr.', firstName, lastName.toUpperCase()].join(' ');
+console.log(newName);
+
+const capitalizeName = function (name) {
+  const namesUpper = [];
+  const names = name.toLowerCase().split(' ');
+  for (const n of names) {
+    // namesUpper.push(n[0].toUpperCase() + n.slice(1));
+    namesUpper.push(n.replace(n[0], n[0].toUpperCase()));
+  }
+  console.log(namesUpper.join(' '));
+};
+
+capitalizeName('jessica ann smITh davis');
+
+//Padding
+const message = 'Go to gate 23';
+//25 wil be the length of the entire final string
+console.log(message.padStart(25, '+').padEnd(30, '+'));
+console.log('Daniel'.padStart(25, '+').padEnd(30, '+'));
+
+const maskCreditCard = function (number) {
+  const str = number + '';
+  console.log(str);
+  const last = str.slice(-4); //take last 4 characters of the input string
+  return last.padStart(str.length, '*');
+};
+
+console.log(maskCreditCard(2472947294185699223232n));
+console.log(maskCreditCard('4824729847239487328942483743289'));
+
+//Repeat
+const message2 = 'Bad weather... All Departures Delayed... ';
+console.log(message2.repeat(5));
+
+const planesInLine = function (n) {
+  console.log(`There are ${n} planes in line ${'🛩'.repeat(n)}`);
+};
+planesInLine(5);
+planesInLine(10);
+
+//CODING CHALLENGE 4
+document.body.append(document.createElement('textarea'));
+document.body.append(document.createElement('button'));
+
+document.querySelector('button').addEventListener('click', function () {
+  console.log('You pressed');
+  const textArray = document
+    .querySelector('textarea')
+    .value.toLowerCase()
+    .split('\n');
+  let i = 0;
+  for (const word of textArray) {
+    i++;
+    let wordTrimmed = word.trim();
+    wordTrimmed =
+      wordTrimmed.slice(0, wordTrimmed.indexOf('_')) +
+      wordTrimmed[wordTrimmed.indexOf('_') + 1].toUpperCase() +
+      wordTrimmed.slice(wordTrimmed.indexOf('_') + 2);
+    wordTrimmed = wordTrimmed.padEnd(20, ' ') + '✅'.repeat(i);
+
+    console.log(wordTrimmed);
+  }
+});
